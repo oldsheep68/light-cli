@@ -1,5 +1,5 @@
 use nb;
-use heapless::{ArrayLength, String};
+use heapless::String;
 
 use tokenizer;
 use tokenizer::{Token, Tokenizer};
@@ -18,13 +18,13 @@ pub enum CallbackCommand<'a> {
     Command(&'a str),
 }
 
-pub struct Lexer<SLEN> where SLEN: ArrayLength<u8> {
-    current_cmd: String<SLEN>,
-    current_key: String<SLEN>,
+pub struct Lexer<const N: usize>{
+    current_cmd: String<N>,
+    current_key: String<N>,
     state: MachineState,
 }
 
-impl<SLEN> Lexer<SLEN> where SLEN: ArrayLength<u8> {
+impl<const N: usize> Lexer<N> {
     pub fn new() -> Self {
         Self {
             current_cmd: String::new(),
@@ -33,7 +33,7 @@ impl<SLEN> Lexer<SLEN> where SLEN: ArrayLength<u8> {
         }
     }
 
-    pub fn parse_data<CB>(&mut self, tokenizer: &mut Tokenizer<SLEN>, mut callback: CB) -> nb::Result<(), tokenizer::Error> 
+    pub fn parse_data<CB>(&mut self, tokenizer: &mut Tokenizer<N>, mut callback: CB) -> nb::Result<(), tokenizer::Error> 
         where CB: FnMut(CallbackCommand) -> () {
         tokenizer.get_tokens(|token| {
             let new_state = match token {

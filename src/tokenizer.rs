@@ -1,10 +1,10 @@
 use core;
 
 use nb;
-use heapless;
+// use heapless;
 
 use hal::serial::Read;
-use heapless::consts::*;
+//use heapless::consts::*;
 use heapless::spsc::Queue;
 use heapless::String;
 
@@ -15,9 +15,9 @@ pub enum Error{
     Overflow
 }
 
-pub struct Tokenizer<SLEN> where SLEN: heapless::ArrayLength<u8> {
-    rb: Queue<u8, U64>,
-    nextstr: String<SLEN>,
+pub struct Tokenizer<const N: usize>  {
+    rb: Queue<u8, 64>,
+    nextstr: String<N>,
 }
 
 pub enum Token<'a> {
@@ -28,8 +28,7 @@ pub enum Token<'a> {
     Value(&'a str),
 }
 
-impl<SLEN> Tokenizer<SLEN>
-where SLEN: heapless::ArrayLength<u8> {
+impl<const N: usize> Tokenizer<N> {
     pub fn new() -> Self {
         Self {
             rb: Queue::new(),
@@ -97,7 +96,7 @@ where SLEN: heapless::ArrayLength<u8> {
                 Ok(c) => c
             };
 
-            let send_val = |callback: &mut CB, s: &mut String<SLEN>| {
+            let send_val = |callback: &mut CB, s: &mut String<N>| {
                 if !s.is_empty() {
                     callback(Token::Value(s))
                 }
@@ -134,7 +133,7 @@ where SLEN: heapless::ArrayLength<u8> {
         }
     }
 
-    pub fn fill<E>(&mut self, ser: &mut Read<u8, Error=E>) -> nb::Result<(), E> {
+    pub fn fill<E>(&mut self, ser: &mut dyn Read<u8, Error=E>) -> nb::Result<(), E> {
         loop {
             let r = ser.read();
             match r {

@@ -9,17 +9,29 @@ repository = "https://github.com/rudihorn/light-cli"
 documentation = "https://rudihorn.github.io/light-cli/light_cli/index.html"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
+autoexamples = false
 
 [dependencies]
-nb = "0.1.1"
-embedded-hal = "0.2.2"
-heapless = "0.4.2"
+nb = "1.0.0"
+embedded-hal = "0.2.7"
+heapless = "0.7.10"   # "0.4.2"
 
-[target."thumbv7m-none-eabi".dev-dependencies]
-cortex-m = "0.5.8"
-cortex-m-rt = "0.6.7"
-  panic-abort = "0.3.1"
-stm32f1xx-hal = { version = "0.2.1", features = ["stm32f103"] }
+[dev-dependencies]
+cortex-m = "0.7.4"   # "0.5.8"
+cortex-m-rt = "0.6.15"  # "0.6.7"
+# panic-abort = "0.3.1"
+stm32f1xx-hal = { version = "0.7.0", features = ["stm32f103"] }
+panic-halt = "0.2.0"
+
+# [target."thumbv7m-none-eabi".dev-dependencies]
+# cortex-m = "0.7.4"   # "0.5.8"
+# cortex-m-rt = "0.7.1"  # "0.6.7"
+#   panic-abort = "0.3.1"
+# stm32f1xx-hal = { version = "0.8.0", features = ["stm32f103"] }  # "0.2.1"
+
+[[example]]
+name = "stm32"
+# required-features = ["stm32f103"]
 
 [features]
 doc = []

@@ -16,21 +16,26 @@
 #![no_std]
 #![no_main]
 
+
+
 extern crate cortex_m;
 extern crate cortex_m_rt;
-extern crate panic_abort;
+// extern crate panic_abort;
 extern crate embedded_hal as hal;
 extern crate stm32f1xx_hal as dev_hal;
 extern crate heapless;
+extern crate panic_halt;
+
+use panic_halt as _;
 
 #[macro_use]
 extern crate light_cli;
 
 use core::fmt::Write;
-use dev_hal::serial::Serial;
+use dev_hal::serial::{Config, Serial};
 use dev_hal::prelude::*;
 use light_cli::{LightCliInput, LightCliOutput};
-use heapless::consts::*;
+// use heapless::consts::*;
 use heapless::String;
 
 use cortex_m_rt::entry;
@@ -52,20 +57,31 @@ fn main() -> ! {
     let tx = gpiob.pb6.into_alternate_push_pull(&mut gpiob.crl);
     let rx = gpiob.pb7;
 
+    // let serial = Serial::usart1(
+    //     dp.USART1,
+    //     (tx, rx),
+    //     &mut afio.mapr,
+    //     9_600.bps(),
+    //     clocks,
+    //     &mut rcc.apb2,
+    // );
+
+    // Set up the usart device. Taks ownership over the USART register and tx/rx pins. The rest of
+    // the registers are used to enable and configure the device.
     let serial = Serial::usart1(
         dp.USART1,
         (tx, rx),
         &mut afio.mapr,
-        9_600.bps(),
+        Config::default().baudrate(9600.bps()),
         clocks,
         &mut rcc.apb2,
     );
 
     let (mut tx, mut rx) = serial.split();
 
-    let mut name : String<U32> = String::new();
+    let mut name : String<32> = String::new();
 
-    let mut cl_in : LightCliInput<U32> = LightCliInput::new();
+    let mut cl_in : LightCliInput<32> = LightCliInput::new();
     let mut cl_out = LightCliOutput::new(&mut tx);
 
     writeln!(cl_out, "Commands:").unwrap();

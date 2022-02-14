@@ -1,4 +1,4 @@
-use heapless;
+// use heapless;
 use nb;
 use tokenizer;
 
@@ -6,12 +6,12 @@ use tokenizer::{Tokenizer};
 use lexer::{Lexer, CallbackCommand};
 use hal::serial::Read;
 
-pub struct LightCliInput<SLEN> where SLEN: heapless::ArrayLength<u8> {
-    tokenizer: Tokenizer<SLEN>,
-    lexer: Lexer<SLEN>
+pub struct LightCliInput<const N: usize> {
+    tokenizer: Tokenizer<N>,
+    lexer: Lexer<N>
 }
 
-impl<SLEN : heapless::ArrayLength<u8>> LightCliInput<SLEN> {
+impl<const N: usize> LightCliInput<N> {
     /// Create a new LightCLI instance.
     pub fn new() -> Self {
         Self {
@@ -44,7 +44,7 @@ impl<SLEN : heapless::ArrayLength<u8>> LightCliInput<SLEN> {
     /// 
     /// This will continue to try to read a byte from the serial device until the
     /// device returns `nb::Error::WouldBlock`.
-    pub fn fill<E>(&mut self, ser: &mut Read<u8, Error=E>) -> nb::Result<(), E> {
+    pub fn fill<E>(&mut self, ser: &mut dyn Read<u8, Error=E>) -> nb::Result<(), E> {
         self.tokenizer.fill(ser)
     }
 }

@@ -1,7 +1,7 @@
 
 use hal::serial::Read;
-use heapless::consts::*;
-use heapless::RingBuffer;
+// use heapless::consts::*;
+use heapless::spsc::Queue as RingBuffer;
 use heapless::String;
 use nb;
 
@@ -9,7 +9,7 @@ use LightCliInput;
 use CallbackCommand;
 
 pub struct SerialBufferDevice {
-    pub rb: RingBuffer<u8, U512>,
+    pub rb: RingBuffer<u8, 512>,
 }
 
 #[allow(dead_code)]
@@ -31,7 +31,7 @@ impl Read<u8> for SerialBufferDevice {
 
 impl SerialBufferDevice {
     pub fn write_str(&mut self, s: &str) {
-        let s : String<U128> = String::from(s);
+        let s : String<128> = String::from(s);
         self.write(s.as_bytes());
     }
 
@@ -52,7 +52,7 @@ pub fn test1() {
     let mut sb = SerialBufferDevice {
         rb: RingBuffer::new()
     };
-    let mut cli : LightCliInput<U32> = LightCliInput::new();
+    let mut cli : LightCliInput<32> = LightCliInput::new();
 
     sb.write_str("HELLO TE❤ST=50\n");
     cli.fill(&mut sb).unwrap();
@@ -85,7 +85,7 @@ pub fn test_win() {
     let mut sb = SerialBufferDevice {
         rb: RingBuffer::new()
     };
-    let mut cli : LightCliInput<U32> = LightCliInput::new();
+    let mut cli : LightCliInput<32> = LightCliInput::new();
 
     sb.write_str("HELLO TE❤ST=50\r\n");
     cli.fill(&mut sb).unwrap();
@@ -119,7 +119,7 @@ pub fn test_partial() {
     let mut sb = SerialBufferDevice {
         rb: RingBuffer::new()
     };
-    let mut cli : LightCliInput<U32> = LightCliInput::new();
+    let mut cli : LightCliInput<32> = LightCliInput::new();
 
     // fill the buffer with some data
     sb.write_str("HELLO TE❤ST=50 Five=A");
@@ -176,7 +176,7 @@ pub fn test_macro() {
     let mut sb = SerialBufferDevice {
         rb: RingBuffer::new()
     };
-    let mut cli : LightCliInput<U32> = LightCliInput::new();
+    let mut cli : LightCliInput<32> = LightCliInput::new();
 
     sb.write_str("HELLO Name=Foo\n");
     cli.fill(&mut sb).unwrap();
@@ -184,7 +184,7 @@ pub fn test_macro() {
     let mut ran = false;
     let mut done = false;
 
-    let mut name : String<U32> = String::new();
+    let mut name : String<32> = String::new();
 
     lightcli_adv!(cli, cmd, key, val, [
             "HELLO" => [

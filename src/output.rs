@@ -3,12 +3,12 @@ use core;
 use nb;
 use hal::serial::Write;
 
-use heapless::consts::*;
+// use heapless::consts::*;
 use heapless::spsc::Queue;
 
 pub struct LightCliOutput<'a, E: 'a> {
-    rb: Queue<u8, U128>,
-    writer: &'a mut Write<u8, Error=E>
+    rb: Queue<u8, 128>,
+    writer: &'a mut dyn Write<u8, Error=E>
 }
 
 impl<'a, E> core::fmt::Write for LightCliOutput<'a, E> {
@@ -36,7 +36,7 @@ impl<'a, E> LightCliOutput<'a, E> {
     /// * `writer`: The serial output instance, implementing the [`Write<u8>`] interface.
     /// 
     /// [`Write<u8>`]: ../embedded_hal/serial/trait.Write.html
-    pub fn new(writer: &'a mut Write<u8, Error = E>) -> Self {
+    pub fn new(writer: &'a mut dyn Write<u8, Error = E>) -> Self {
         Self {
             rb: Queue::new(),
             writer: writer

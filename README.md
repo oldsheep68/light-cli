@@ -35,6 +35,9 @@ It is recommended to use this in conjunction with the program [`rlwrap`](https:/
 
 [Complete Example](https://github.com/rudihorn/light-cli/tree/master/examples/)
 
+## build command
+cargo build --example stm32 --target thumbv7m-none-eabi
+
 ## What works
 
 - Read key value style commands in the form:
